@@ -3,8 +3,7 @@ package com.mercadolibre.tratamentoDeErros;
 import java.util.Scanner;
 
 public class Conversao {
-    public class Main {
-        public static void main(String[] args) {
+        public void main(String[] args) {
             try (Scanner scanner = new Scanner(System.in)) {
                 System.out.print("Digite um número inteiro: ");
                 String entrada = scanner.nextLine();
@@ -18,4 +17,3 @@ public class Conversao {
             }
         }
     }
-}
