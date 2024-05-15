@@ -1,4 +1,4 @@
-package com.mercadolibre.ececoes;
+package com.mercadolibre.excecoes;
 
 public class idade {
     public static void main (String [] args ){

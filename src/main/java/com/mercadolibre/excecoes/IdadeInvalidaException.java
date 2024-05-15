@@ -1,4 +1,4 @@
-package com.mercadolibre.ececoes;
+package com.mercadolibre.excecoes;
 
 public class IdadeInvalidaException extends Exception {
     public IdadeInvalidaException (int idade){
