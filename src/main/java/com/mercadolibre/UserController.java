@@ -23,12 +23,12 @@ class UserController {
     @PostMapping
     public ResponseEntity<Object> createUser(@RequestBody User newUser) {
         user = (User.Usuario) newUser;
+
         return ResponseEntity.ok().body(new ApiResponse("Usuário foi criado com sucesso.", newUser));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateUser(@PathVariable int id, @RequestBody User updatedUser) {
-
         if (id == user.getId()) {
             user = (User.Usuario) updatedUser;
             return ResponseEntity.ok().body(new ApiResponse("Usuário foi atualizado com sucesso.", updatedUser));
