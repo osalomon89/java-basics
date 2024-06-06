@@ -9,17 +9,15 @@ import java.util.List;
 // @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
-        List<Product> produtos = new ArrayList<>();
+        List<Product> items = new ArrayList<>();
 
         Product chocolate = new Product(1, "chocolate", 7.00);
         Product bala = new Product(2, "bala", 0.10);
         Product chiclete = new Product(3, "chiclete", 0.20);
 
-        produtos.add(chiclete);
-        produtos.add(chocolate);
-        produtos.add(bala);
-
-        double valorMinimo = 0.15;
+        items.add(chiclete);
+        items.add(chocolate);
+        items.add(bala);
 
 //        for (int i = 0; i < produtos.size(); i++) {
 //            Produto elemento = produtos.get(i);
