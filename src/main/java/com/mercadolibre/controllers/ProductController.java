@@ -1,8 +1,8 @@
 package com.mercadolibre.controllers;
 
-import com.example.springBoot.dtos.ProductRecordDto;
-import com.example.springBoot.models.ProductModel;
-import com.example.springBoot.repositories.ProductRepository;
+import com.mercadolibre.dtos.ProductRecordDto;
+import com.mercadolibre.models.ProductModel;
+import com.mercadolibre.repositories.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
