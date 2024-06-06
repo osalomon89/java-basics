@@ -9,28 +9,20 @@ import java.util.List;
 // @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
-        List<Product> items = new ArrayList<>();
+        System.out.println("Starting..........");
 
         Product chocolate = new Product(1, "chocolate", 7.00);
-        Product bala = new Product(2, "bala", 0.10);
-        Product chiclete = new Product(3, "chiclete", 0.20);
+        Product ball = new Product(2, "bola", 0.10);
+        Product tv = new Product(3, "tv", 0.20);
 
-        items.add(chiclete);
-        items.add(chocolate);
-        items.add(bala);
+        double result = ball.calcularPrecioTotal(12);
 
-//        for (int i = 0; i < produtos.size(); i++) {
-//            Produto elemento = produtos.get(i);
-//            if (elemento.getPreco() >= valorMinimo){
-//                System.out.println(elemento.getNome());
-//            }
-//        }
+        Product.calcularImpuestoEstatico(10, 5);
 
-//        for (Product produto : produtos) {
-//            System.out.println(produto.getName());
-//        }
-
-        System.out.println("++++++++++++++++++++++++++");
+        System.out.println(chocolate.getPrice());
+        chocolate.setPrice(9);
+        chocolate.stock = 15;
+        System.out.println(chocolate.getPrice());
 
         System.out.println("---------Fin");
     }
