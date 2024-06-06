@@ -1,4 +1,4 @@
-package com.example.springBoot.models;
+package com.mercadolibre.springBoot.src.main.java.com.example.springBoot.models;
 
 import jakarta.persistence.*;
 import org.springframework.hateoas.RepresentationModel;
