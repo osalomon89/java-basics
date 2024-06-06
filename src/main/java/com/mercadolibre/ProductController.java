@@ -1,4 +1,4 @@
-package com.example.springBoot.controllers;
+package com.mercadolibre;
 
 import com.example.springBoot.dtos.ProductRecordDto;
 import com.example.springBoot.models.ProductModel;
@@ -6,17 +6,18 @@ import com.example.springBoot.repositories.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo;
 
 @RestController
 public class ProductController {

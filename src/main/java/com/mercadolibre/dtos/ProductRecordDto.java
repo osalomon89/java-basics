@@ -1,4 +1,4 @@
-package com.example.springBoot.dtos;
+package com.mercadolibre.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

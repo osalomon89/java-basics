@@ -1,4 +1,4 @@
-package com.example.springBoot.repositories;
+package com.mercadolibre.repositories;
 
 
 import com.example.springBoot.models.ProductModel;
