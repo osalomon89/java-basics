@@ -40,7 +40,7 @@ public class ProductController {
 
         if (!productList.isEmpty()) {
             for (ProductModel product : productList) {
-                UUID id = product.getIdProduct();
+                UUID id = product.getIdProduto();
                 EntityModel<ProductModel> model = EntityModel.of(product);
                 model.add(WebMvcLinkBuilder.linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
                 productModels.add(model);
