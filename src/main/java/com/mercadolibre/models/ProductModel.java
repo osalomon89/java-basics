@@ -1,6 +1,8 @@
 package com.mercadolibre.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
@@ -16,50 +18,12 @@ public class ProductModel extends RepresentationModel<ProductModel> implements S
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter
+    @Setter
     private UUID idProduto;
-    private String name;
+    private String nome;
     private BigDecimal valor;
-    private int Quantidade;
-    private String Descricao;
-
-    public int getQuantidade() {
-        return Quantidade;
-    }
-
-    public void setQuantidade(int quantidade) {
-        Quantidade = quantidade;
-    }
-
-    public String getDescricao() {
-        return Descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        Descricao = descricao;
-    }
-
-    public UUID getIdProduto() {
-        return idProduto;
-    }
-
-    public void setIdProduto(UUID idProduto) {
-        this.idProduto = idProduto;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public BigDecimal getValor() {
-        return valor;
-    }
-
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
-    }
+    private int quantidade;
+    private String descricao;
 
 }
