@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+# Datasource Configuration
+datasource:
+  url: localhost:3306
+  db: cleanarch
+  user: ${USER}
+  password: ${PASS}
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  
+spring:
+  profiles:
+    active: local
+  jpa:
+    hibernate:
+      ddl-auto: update
