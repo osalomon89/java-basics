@@ -1,9 +1,9 @@
-package com.mercadolibre.usecase;
+package com.mercadolibre.service;
 
 import com.mercadolibre.domain.Product;
 import com.mercadolibre.factory.DiscountStrategyFactory;
 import com.mercadolibre.orchestrator.ProductOrchestrator;
-import com.mercadolibre.product.IDiscountStrategy;
+import com.mercadolibre.strategy.product.IDiscountStrategy;
 import com.mercadolibre.repository.ProductRepository;
 import com.mercadolibre.restclient.BrandClient;
 import com.mercadolibre.restclient.exception.RestException;
@@ -18,15 +18,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
-public class ProductUsecase {
-	private static final Logger log = LoggerFactory.getLogger(ProductUsecase.class);
+public class ProductService {
+	private static final Logger log = LoggerFactory.getLogger(ProductService.class);
 	private final ProductRepository productRepository;
 	private final BrandClient brandClient;
 	private final DiscountStrategyFactory discountStrategyFactory;
 	private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 	private final ProductOrchestrator productOrchestrator;
 
-	public ProductUsecase(ProductRepository productRepository,
+	public ProductService(ProductRepository productRepository,
 						  BrandClient brandClient,
 						  DiscountStrategyFactory discountStrategyFactory,
 						  ProductOrchestrator productOrchestrator) {
@@ -53,11 +53,11 @@ public class ProductUsecase {
 	public void createProductAsync(Product product) {
 		log.info("entering ProductUseCase");
 
-		try {
-			productOrchestrator.createProduct(product);
-		} catch (Exception e){
-			log.error("error creating product", e);
-		}
+//		try {
+//			productOrchestrator.createProduct(product);
+//		} catch (Exception e){
+//			log.error("error creating product", e);
+//		}
 	}
 
 	public double getFinalPrice(double price, String discountType, double discountValue) {

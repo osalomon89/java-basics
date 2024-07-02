@@ -1,4 +1,4 @@
-package com.mercadolibre.usecase;
+package com.mercadolibre.service;
 
 /** 
  * Exception containing relevant information for API errors.

@@ -1,4 +1,4 @@
-package com.mercadolibre.product;
+package com.mercadolibre.strategy.product;
 
 public class PercentageDiscount implements IDiscountStrategy {
     private final double percentage;

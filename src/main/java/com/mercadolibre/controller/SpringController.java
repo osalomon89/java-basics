@@ -6,8 +6,8 @@ import com.mercadolibre.controller.dtos.ProductResponseDTO;
 import com.mercadolibre.controller.dtos.ProductsDataDTO;
 import com.mercadolibre.domain.Product;
 import com.mercadolibre.restclient.exception.RestException;
-import com.mercadolibre.usecase.ApiException;
-import com.mercadolibre.usecase.ProductUsecase;
+import com.mercadolibre.service.ApiException;
+import com.mercadolibre.service.ProductService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class SpringController {
 	private static final Logger log = LoggerFactory.getLogger(SpringController.class);
-	private ProductUsecase productService;
+	private ProductService productService;
 
 	private ModelMapper modelMapper;
 
 	@Autowired
-	public SpringController(ProductUsecase productService) {
+	public SpringController(ProductService productService) {
 		this.productService = productService;
 		modelMapper = new ModelMapper();
 	}
