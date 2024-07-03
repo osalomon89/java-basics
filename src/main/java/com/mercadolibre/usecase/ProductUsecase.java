@@ -3,7 +3,7 @@ package com.mercadolibre.usecase;
 import com.mercadolibre.domain.Product;
 import com.mercadolibre.factory.DiscountStrategyFactory;
 import com.mercadolibre.orchestrator.ProductOrchestrator;
-import com.mercadolibre.product.IDiscountStrategy;
+import com.mercadolibre.strategy.product.IDiscountStrategy;
 import com.mercadolibre.repository.ProductRepository;
 import com.mercadolibre.restclient.BrandClient;
 import com.mercadolibre.restclient.exception.RestException;
@@ -14,8 +14,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductUsecase {
@@ -84,6 +86,12 @@ public class ProductUsecase {
 
 		UpdatePricesTask task = new UpdatePricesTask(ids, value, productRepository);
 		executorService.submit(task);
+	}
+
+	public List<Product> createBulkProducts(List<Product> products) {
+		log.info("entering ProductUseCase: createBulkProducts().");
+
+        return productOrchestrator.createProducts(products);
 	}
 }
 

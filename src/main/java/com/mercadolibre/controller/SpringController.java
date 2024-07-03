@@ -18,13 +18,16 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping("/api/v1")
 public class SpringController {
 	private static final Logger log = LoggerFactory.getLogger(SpringController.class);
-	private ProductUsecase productService;
-
-	private ModelMapper modelMapper;
+	private final ProductUsecase productService;
+	private final ModelMapper modelMapper;
 
 	@Autowired
 	public SpringController(ProductUsecase productService) {
@@ -74,6 +77,17 @@ public class SpringController {
 		log.info("creating in progress.......");
 
 		return new ResponseEntity<>("creating in progress", HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("/bulk-products")
+	public ResponseEntity<List<Product>> createBulkProducts(@Valid @RequestBody List<ProductDTO> productsDto) {
+		List<Product> products = new ArrayList<>();
+
+        for (ProductDTO productDTO : productsDto) {
+            products.add(modelMapper.map(productDTO, Product.class));
+        }
+
+		return new ResponseEntity<>(productService.createBulkProducts(products), HttpStatus.OK);
 	}
 
 	@GetMapping("/products/final-price")

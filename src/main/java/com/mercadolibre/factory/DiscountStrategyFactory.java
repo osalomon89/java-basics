@@ -1,9 +1,9 @@
 package com.mercadolibre.factory;
 
-import com.mercadolibre.product.FixedAmountDiscount;
-import com.mercadolibre.product.IDiscountStrategy;
-import com.mercadolibre.product.NoDiscount;
-import com.mercadolibre.product.PercentageDiscount;
+import com.mercadolibre.strategy.product.FixedAmountDiscount;
+import com.mercadolibre.strategy.product.IDiscountStrategy;
+import com.mercadolibre.strategy.product.NoDiscount;
+import com.mercadolibre.strategy.product.PercentageDiscount;
 import org.springframework.stereotype.Component;
 
 @Component
