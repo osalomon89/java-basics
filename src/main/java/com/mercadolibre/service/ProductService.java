@@ -53,11 +53,11 @@ public class ProductService {
 	public void createProductAsync(Product product) {
 		log.info("entering ProductUseCase");
 
-//		try {
-//			productOrchestrator.createProduct(product);
-//		} catch (Exception e){
-//			log.error("error creating product", e);
-//		}
+		try {
+			productOrchestrator.createProduct(product);
+		} catch (Exception e){
+			log.error("error creating product", e);
+		}
 	}
 
 	public double getFinalPrice(double price, String discountType, double discountValue) {
