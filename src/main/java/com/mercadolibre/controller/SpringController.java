@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 public class SpringController {
@@ -39,13 +41,7 @@ public class SpringController {
 
 	@PostMapping("/products")
 	public ResponseEntity<ProductResponseDTO> saveProduct(@Valid @RequestBody ProductDTO productDto) {
-		Product product = new Product();
-		product.setCode(productDto.getCode());
-		product.setDescription(productDto.getDescription());
-		product.setType(productDto.getType());
-		product.setProviderId(productDto.getProviderId());
-		product.setStock(productDto.getStock());
-		product.setPrice(productDto.getPrice());
+		Product product = newProducto(productDto);
 
 		try {
 			Product savedProduct = productService.saveProduct(product);
@@ -61,20 +57,22 @@ public class SpringController {
 
 	@PostMapping("/products-async")
 	public ResponseEntity<String> createProduct(@Valid @RequestBody ProductDTO productDto) {
-		Product product = new Product();
-		product.setCode(productDto.getCode());
-		product.setDescription(productDto.getDescription());
-		product.setType(productDto.getType());
-		product.setProviderId(productDto.getProviderId());
-		product.setStock(productDto.getStock());
-		product.setPrice(productDto.getPrice());
-
+		Product product = newProducto(productDto);
 		productService.createProductAsync(product);
-
 		log.info("creating in progress.......");
-
 		return new ResponseEntity<>("creating in progress", HttpStatus.ACCEPTED);
 	}
+
+	@PostMapping("/bulk-products")
+	public ResponseEntity<String> createListProduct(@Valid @RequestBody List<ProductDTO> productDtoList) {
+		productDtoList.stream()
+				.map(this::newProducto)
+				.forEach(productService::createProductAsync);
+
+		log.info("Creating products in progress.......");
+		return new ResponseEntity<>("Creating products in progress", HttpStatus.ACCEPTED);
+	}
+
 
 	@GetMapping("/products/final-price")
 	public ResponseEntity<PriceDTO> getFinalPrice(@RequestParam double price,
@@ -92,6 +90,17 @@ public class SpringController {
 		log.info("updating in progress.......");
 
 		return new ResponseEntity<>("Updating in progress", HttpStatus.ACCEPTED);
+	}
+
+	private Product newProducto(ProductDTO productDto) {
+		Product product = new Product();
+		product.setCode(productDto.getCode());
+		product.setDescription(productDto.getDescription());
+		product.setType(productDto.getType());
+		product.setProviderId(productDto.getProviderId());
+		product.setStock(productDto.getStock());
+		product.setPrice(productDto.getPrice());
+		return product;
 	}
 }
 
