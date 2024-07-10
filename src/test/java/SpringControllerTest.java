@@ -6,14 +6,9 @@ import com.mercadolibre.pipeline.steps.SaveProductStep;
 import com.mercadolibre.pipeline.steps.ValidateProductStep;
 import com.mercadolibre.repository.ProductRepository;
 import com.mercadolibre.restclient.BrandClient;
-import com.mercadolibre.restclient.exception.RestException;
 import com.mercadolibre.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
-import org.modelmapper.ModelMapper;
-
-import java.util.List;
-import java.util.Map;
 
 public class SpringControllerTest {
     SpringController springController;
