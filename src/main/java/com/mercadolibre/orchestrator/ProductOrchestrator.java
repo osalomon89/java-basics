@@ -1,7 +1,6 @@
 package com.mercadolibre.orchestrator;
 
 import com.mercadolibre.callable.ProductCallable;
-import com.mercadolibre.controller.dtos.ProductDTO;
 import com.mercadolibre.domain.Product;
 import com.mercadolibre.pipeline.Pipeline;
 import com.mercadolibre.pipeline.steps.NotifyProductCreationStep;

@@ -90,6 +90,17 @@ public class SpringController {
 		return new ResponseEntity<>(productService.createBulkProducts(products), HttpStatus.OK);
 	}
 
+	@PostMapping("/products/bulk")
+	public ResponseEntity<List<Product>> createProducts(@Valid @RequestBody List<ProductDTO> productsDto) {
+		List<Product> products = new ArrayList<>();
+
+		for (ProductDTO productDTO : productsDto) {
+			products.add(modelMapper.map(productDTO, Product.class));
+		}
+
+		return new ResponseEntity<>(productService.createProducts(products), HttpStatus.OK);
+	}
+
 	@GetMapping("/products/final-price")
 	public ResponseEntity<PriceDTO> getFinalPrice(@RequestParam double price,
 												  @RequestParam String discountType,

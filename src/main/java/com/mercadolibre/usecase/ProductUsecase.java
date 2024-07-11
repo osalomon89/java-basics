@@ -1,5 +1,6 @@
 package com.mercadolibre.usecase;
 
+import com.mercadolibre.callable.ProductCallable;
 import com.mercadolibre.domain.Product;
 import com.mercadolibre.factory.DiscountStrategyFactory;
 import com.mercadolibre.orchestrator.ProductOrchestrator;
@@ -12,11 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import com.mercadolibre.util.ExecutorThreadsPoolUtils;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,16 +30,19 @@ public class ProductUsecase {
 	private final DiscountStrategyFactory discountStrategyFactory;
 	private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 	private final ProductOrchestrator productOrchestrator;
+	private final ExecutorThreadsPoolUtils<Product> executorThreadsPoolUtils;
 
 	public ProductUsecase(ProductRepository productRepository,
 						  BrandClient brandClient,
 						  DiscountStrategyFactory discountStrategyFactory,
-						  ProductOrchestrator productOrchestrator) {
+						  ProductOrchestrator productOrchestrator,
+						  ExecutorThreadsPoolUtils<Product> executorThreadsPoolUtils) {
 
 		this.productRepository = productRepository;
 		this.brandClient = brandClient;
 		this.discountStrategyFactory = discountStrategyFactory;
 		this.productOrchestrator = productOrchestrator;
+		this.executorThreadsPoolUtils = executorThreadsPoolUtils;
 	}
 
 	public Product saveProduct(Product product) throws RestException {
@@ -92,6 +98,32 @@ public class ProductUsecase {
 		log.info("entering ProductUseCase: createBulkProducts().");
 
         return productOrchestrator.createProducts(products);
+	}
+
+	public List<Product> createProducts(List<Product> products){
+		log.info("entering ProductUseCase: createProducts().");
+
+		try{
+			return executeThreads(products);
+		} catch (Exception e) {
+			log.error("error when execute simulation - {}", e.getMessage());
+			return null;
+		}
+	}
+
+	private List<Product> executeThreads(List<Product> products) throws InterruptedException {
+		ExecutorService executorService = Executors.newFixedThreadPool(10);
+		List<Callable<Product>> caseExecutorCallables = wrapProductOnCallable(products);
+		List<Future<Product>> bulkCaseResults = executorService.invokeAll(caseExecutorCallables);
+		executorService.shutdown();
+
+		return executorThreadsPoolUtils.extractResponse(bulkCaseResults);
+	}
+
+	private List<Callable<Product>> wrapProductOnCallable(List<Product> products) {
+		return products.parallelStream()
+				.map(product -> (Callable<Product>) () -> productRepository.save(product))
+				.collect(Collectors.toList());
 	}
 }
 
