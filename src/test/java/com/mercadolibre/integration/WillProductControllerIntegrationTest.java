@@ -1,5 +1,7 @@
 package com.mercadolibre.integration;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.mercadolibre.controller.SpringController;
 import com.mercadolibre.controller.dtos.ProductDTO;
 import com.mercadolibre.controller.dtos.ProductResponseDTO;
@@ -15,17 +17,27 @@ import com.mercadolibre.service.PipelineProductService;
 import com.mercadolibre.usecase.ProductUsecase;
 import com.mercadolibre.util.ExecutorThreadsPoolUtils;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
+import static org.awaitility.Awaitility.await;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Assertions.*;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,10 +65,18 @@ class WillProductControllerIntegrationTest {
     DiscountStrategyFactory discountStrategyFactory;
     @Mock
     ExecutorThreadsPoolUtils<Product> executorThreadsPoolUtils;
-    private int idCounter = 1;
+
+    private ListAppender<ILoggingEvent> listAppender;
+
 
     @BeforeEach
     void setUp() {
+        listAppender = new ListAppender<>();
+        listAppender.start();
+        Logger logger = (Logger) LoggerFactory.getLogger(NotifyProductCreationStep.class);
+        logger.addAppender(listAppender);
+        listAppender.list.clear();
+
         ValidateProductStep validateStep = new ValidateProductStep();
         NotifyProductCreationStep notifyStep = new NotifyProductCreationStep();
         SaveProductStep saveStep = new SaveProductStep(productRepository);
@@ -71,10 +92,18 @@ class WillProductControllerIntegrationTest {
 
         List<ProductDTO> products = new ArrayList<>();
         listProductos(products);
-        ResponseEntity response =  springController.createBulkProducts(products);
+        ResponseEntity response = springController.createBulkProducts(products);
         assertEquals("200 OK", response.getStatusCode().toString());
-    }
 
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            List<ILoggingEvent> logEvents = listAppender.list;
+            Assertions.assertNotNull(logEvents);
+
+            assertEquals(3, logEvents.size());
+
+            assertEquals("Step 3: NotifyProductCreationStep", logEvents.get(0).getFormattedMessage());
+        });
+    }
     private void whenReturnRepositorySave() {
         when(productRepository.save(any())).thenReturn(Product.builder()
                         .id(1)
