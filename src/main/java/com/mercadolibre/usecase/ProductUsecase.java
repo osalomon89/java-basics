@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductUsecase {
 	private static final Logger log = LoggerFactory.getLogger(ProductUsecase.class);
+
 	private final ProductRepository productRepository;
 	private final BrandClient brandClient;
 	private final DiscountStrategyFactory discountStrategyFactory;

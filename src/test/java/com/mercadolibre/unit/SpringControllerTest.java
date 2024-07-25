@@ -1,83 +1,85 @@
-package com.mercadolibre.integration;
+package com.mercadolibre.unit;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.mercadolibre.controller.SpringController;
 import com.mercadolibre.controller.dtos.ProductDTO;
 import com.mercadolibre.domain.Product;
-import com.mercadolibre.pipeline.steps.NotifyProductCreationStep;
 import com.mercadolibre.repository.ProductRepository;
-import org.junit.jupiter.api.Assertions;
+import com.mercadolibre.usecase.ProductUsecase;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import ch.qos.logback.classic.Logger;
-
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@ExtendWith(SpringExtension.class)
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class WillProductControllerIntegrationTest {
+@Transactional
+public class SpringControllerTest {
     @MockBean
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
-    SpringController springController;
+    private SpringController productController;
 
     private ListAppender<ILoggingEvent> listAppender;
 
     private final AtomicInteger counter = new AtomicInteger();
 
     @BeforeEach
-    void setUp() {
+    public void setup() {
+        Logger logger = (Logger) LoggerFactory.getLogger(ProductUsecase.class);
+
         listAppender = new ListAppender<>();
         listAppender.start();
-        Logger logger = (Logger) LoggerFactory.getLogger(NotifyProductCreationStep.class);
         logger.addAppender(listAppender);
-        listAppender.list.clear();
     }
 
     @Test
-    void testSaveProduct() {
+    public void testCreateProducts() {
+        List<ProductDTO> productDTOList = new ArrayList<>();
+        createProductDTOList(productDTOList);
+
         when(productRepository.save(any(Product.class))).thenAnswer(invocation -> {
-            Product product = invocation.getArgument(0);
-            product.setId(counter.incrementAndGet());
-            return product;
+                Product product = invocation.getArgument(0);
+                product.setId(counter.incrementAndGet());
+                return product;
+            });
+
+        ResponseEntity<List<Product>> responseEntity = productController.createProducts(productDTOList);
+
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            List<ILoggingEvent> logEvents = listAppender.list;
+            assertNotNull(logEvents);
+
+            assertEquals(1, logEvents.size());
+
+            // Verificar el contenido de los mensajes de log
+            assertEquals("entering ProductUseCase: createProducts().", logEvents.get(0).getFormattedMessage());
         });
 
-        List<ProductDTO> products = new ArrayList<>();
-        createProductDTOList(products);
-
-        ResponseEntity<List<Product>> response = springController.createBulkProducts(products);
-
-        assertEquals("200 OK", response.getStatusCode().toString());
-        //assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertNotNull(response.getBody());
-        assertEquals(10, response.getBody().size());
-        assertEquals("P001", response.getBody().get(0).getCode());
-        assertEquals("P002", response.getBody().get(1).getCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+        assertEquals(10, responseEntity.getBody().size());
+        assertEquals("P001", responseEntity.getBody().get(0).getCode());
+        assertEquals("P002", responseEntity.getBody().get(1).getCode());
 
         verify(productRepository, times(10)).save(any(Product.class));
-
-        List<ILoggingEvent> logEvents = listAppender.list;
-        Assertions.assertNotNull(logEvents);
-        assertEquals(30, logEvents.size());
-        assertEquals("Step 3: NotifyProductCreationStep", logEvents.get(0).getFormattedMessage());
     }
 
     private static void createProductDTOList(List<ProductDTO> products) {
